@@ -10,31 +10,35 @@ Public Class Tetris
     Private Sub Tetris_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim a As List(Of List(Of Nullable(Of Color))) = PapanGame.AmbilPointerData()
 
-        a(9)(0) = Color.Red
-        a(8)(0) = Color.Red
-        a(7)(0) = Color.Red
-        a(6)(0) = Color.Red
+        ' Bentuk Tegak Lurus
+        a(9)(0) = Color.LightSkyBlue
+        a(8)(0) = Color.LightSkyBlue
+        a(7)(0) = Color.LightSkyBlue
+        a(6)(0) = Color.LightSkyBlue
 
-        a(7)(3) = Color.Yellow
-        a(8)(3) = Color.Yellow
-        a(8)(4) = Color.Yellow
-        a(9)(4) = Color.Yellow
+        ' Bentuk S
+        a(7)(3) = Color.LimeGreen
+        a(8)(3) = Color.LimeGreen
+        a(8)(4) = Color.LimeGreen
+        a(9)(4) = Color.LimeGreen
 
-        a(9)(6) = Color.Purple
-        a(9)(7) = Color.Purple
-        a(8)(7) = Color.Purple
-        a(9)(8) = Color.Purple
+        ' Bentuk T
+        a(9)(6) = Color.LightPink
+        a(9)(7) = Color.LightPink
+        a(8)(7) = Color.LightPink
+        a(9)(8) = Color.LightPink
 
-        a(15)(0) = Color.Maroon
-        a(15)(1) = Color.Maroon
-        a(15)(2) = Color.Maroon
-        a(15)(3) = Color.Maroon
-        a(15)(4) = Color.Maroon
-        a(15)(5) = Color.Maroon
-        a(15)(6) = Color.Maroon
-        a(15)(7) = Color.Maroon
-        a(15)(8) = Color.Maroon
-        a(15)(9) = Color.Maroon
+        a(2)(1) = Color.Maroon
+        a(2)(2) = Color.Maroon
+        a(3)(2) = Color.Maroon
+        a(2)(3) = Color.Maroon
+
+        Dim b = New List(Of (Integer, Integer))
+        b.Add((2, 1))
+        b.Add((2, 2))
+        b.Add((3, 2))
+        b.Add((2, 3))
+        Me.PapanGame.SetBlokAktif("T", b)
 
         Me.MusicAudioPlayer = New WindowsMediaPlayer
         'Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, "PublicResources/Tetris 99 - Main Theme.mp3")
@@ -42,11 +46,11 @@ Public Class Tetris
         AddHandler Me.MusicAudioPlayer.EndOfStream, AddressOf Me.MusicLoop
 
         ' Buat timer permainan, speed: 2 FPS
-        TickGame = New Timer With {
-            .Interval = 450
+        Me.TickGame = New Timer With {
+            .Interval = 550
         }
-        AddHandler TickGame.Tick, AddressOf OnGameTick
-        TickGame.Enabled = True
+        AddHandler Me.TickGame.Tick, AddressOf OnGameTick
+        Me.TickGame.Enabled = True
 
         Me.DoubleBuffered = True
         Dim flags As BindingFlags = BindingFlags.Instance Or BindingFlags.NonPublic
@@ -111,5 +115,22 @@ Public Class Tetris
             Me.MusicAudioPlayer.currentMedia = Nothing
             Me.MusicAudioPlayer = Nothing
         End If
+    End Sub
+
+    Private Sub Tetris_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
+        If e.KeyCode = Keys.D Then
+            Me.TickGame.Enabled = False
+            Me.PapanGame.GeserX_BlokAktif(1)
+            Me.GameArea.Refresh()
+
+        ElseIf e.KeyCode = Keys.A Then
+            Me.TickGame.Enabled = False
+            Me.PapanGame.GeserX_BlokAktif(-1)
+            Me.GameArea.Refresh()
+        End If
+    End Sub
+
+    Private Sub Tetris_KeyUp(sender As Object, e As KeyEventArgs) Handles MyBase.KeyUp
+        Me.TickGame.Enabled = True
     End Sub
 End Class
