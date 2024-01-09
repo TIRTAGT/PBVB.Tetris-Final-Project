@@ -1,24 +1,28 @@
 ﻿Public Class DataTetris
-    Private PapanPermainan As List(Of List(Of Color?))
-    Private BlokAktif As New List(Of (Integer, Integer))
-    Private TipeBlokAktif As String = String.Empty
+    Private PapanPermainan As List(Of List(Of Char?))
+    Private BlokAktif As (Integer, Integer)?
+    Public TotalKolom As Integer = 0
+    Public TotalBaris As Integer = 0
 
     Public Sub New()
-        Me.PapanPermainan = New List(Of List(Of Color?))
+        Me.PapanPermainan = New List(Of List(Of Char?))
         Me.Inisialisasi()
     End Sub
 
-    Public Sub New(ByRef Papan As List(Of List(Of Color?)))
+    Public Sub New(ByRef Papan As List(Of List(Of Char?)))
         Me.PapanPermainan = Papan
         Me.Inisialisasi()
     End Sub
 
     Private Sub Inisialisasi()
-        'Buat array/list papan permainan 10x20
-        For i = 1 To 20
-            Dim Kolom As New List(Of Nullable(Of Color))
+        'Buat array/list papan permainan 10x20 (baru: 6.31x10.97)
+        TotalKolom = 6
+        TotalBaris = 11
 
-            For j = 1 To 10
+        For i = 0 To TotalBaris - 1
+            Dim Kolom As New List(Of Char?)
+
+            For j = 0 To TotalKolom - 1
                 Kolom.Add(Nothing)
             Next
 
@@ -30,11 +34,11 @@
     ''' Duplikat isi papan permainan tanpa reference memori asli
     ''' </summary>
     ''' <param name="Papan">Papan yang ingin di duplikat</param>
-    Public Function DuplikatPapan(ByRef Papan As List(Of List(Of Color?))) As List(Of List(Of Color?))
-        Dim temp As New List(Of List(Of Color?))
+    Public Function DuplikatPapan(ByRef Papan As List(Of List(Of Char?))) As List(Of List(Of Char?))
+        Dim temp As New List(Of List(Of Char?))
 
         For i = 0 To Papan.Count - 1
-            Dim Kolom As New List(Of Nullable(Of Color))
+            Dim Kolom As New List(Of Char?)
 
             For j = 0 To Papan(i).Count - 1
                 Kolom.Add(Papan(i)(j))
@@ -46,138 +50,117 @@
         Return temp
     End Function
 
-    Public Function DuplikatBlokAktif(ByRef BlokAktif As List(Of (Integer, Integer))) As List(Of (Integer, Integer))
-        Dim temp As New List(Of (Integer, Integer))
+    Public Function DuplikatBlokAktif(ByRef BlokAktif As (Integer, Integer)?) As (Integer, Integer)?
+        Dim temp As (Integer, Integer)?
 
-        For i = 0 To BlokAktif.Count - 1
-            temp.Add(BlokAktif(i))
-        Next
+        If BlokAktif.HasValue Then
+            temp = (BlokAktif.Value.Item1, BlokAktif.Value.Item2)
+        End If
 
         Return temp
     End Function
 
-    Public Sub Turunkan()
+
+    Public Function Turunkan() As Integer
+        Dim JumlahBlokTurun = 0
         Dim tempPapan = Me.DuplikatPapan(Me.PapanPermainan)
         Dim tempBlokAktif = Me.DuplikatBlokAktif(Me.BlokAktif)
 
         ' Turunkan dari baris yang hampir paling bawah (-1)
-        For IndexBaris = 18 To 0 Step -1
-            Dim BentrokanHimpunanMatrix As Boolean = False
-            Dim JumlahBlokTerisi As Integer = 0
+        For IndexBaris = (Me.TotalBaris - 2) To 0 Step -1
+            For IndexKolom = 0 To (Me.TotalKolom - 1)
+                Dim BentrokanHimpunanMatrix As Boolean = False
 
-            For IndexKolom = 0 To 9
                 ' Jika blok matrix ini tidak kosong
                 If Not IsKosong(tempPapan, IndexBaris, IndexKolom) Then
-                    JumlahBlokTerisi += 1
 
                     ' Jika blok matrix dibawahnya tidak kosong (sudah terisi)
                     If Not IsKosong(tempPapan, IndexBaris + 1, IndexKolom) Then
                         ' Ada bentrokan dan gak bisa diturunkan
                         BentrokanHimpunanMatrix = True
-                        Exit For
                     End If
+                Else
+                    ' Jika kosong, tidak perlu diturunkan
+                    Continue For
                 End If
-            Next
 
-            ' Jika sudah tidak bisa digeser kebawah lagi, lanjut ke baris selanjutnya
-            If BentrokanHimpunanMatrix Then
-                Continue For
-            End If
+                ' Jika sudah tidak bisa digeser kebawah lagi, lanjut ke baris selanjutnya
+                If BentrokanHimpunanMatrix Then
+                    Continue For
+                End If
 
-            ' Jika tidak ada yang perlu digeser, lanjut ke baris selanjutnya
-            If JumlahBlokTerisi = 0 Then
-                Continue For
-            End If
-
-            ' Geser semua kolom pada baris ini kebawah
-            For IndexKolom = 0 To 9
-                ' Jika blok matrix ini tidak bisa turun (ada bentrokan)
+                JumlahBlokTurun += 1
                 tempPapan(IndexBaris + 1)(IndexKolom) = tempPapan(IndexBaris)(IndexKolom)
                 tempPapan(IndexBaris)(IndexKolom) = Nothing
 
-                ' Update juga blok aktif jika ada
-                If tempBlokAktif.Count > 0 Then
-                    For i = 0 To tempBlokAktif.Count - 1
-                        Dim pair = tempBlokAktif(i)
+                ' Update juga lokasi blok aktif jika ada
+                If tempBlokAktif.HasValue Then
+                    ' Jika yang diturunkan bukan blok aktif, jangan update lokasi blok aktif
+                    If (Not tempBlokAktif.Value.Item1 = IndexBaris) OrElse (Not tempBlokAktif.Value.Item2 = IndexKolom) Then
+                        Continue For
+                    End If
 
-                        ' Jika tidak cocok, skip
-                        If (Not pair.Item1 = IndexBaris) OrElse (pair.Item2 = IndexKolom) Then
-                            Continue For
-                        End If
-
-                        tempBlokAktif(i) = (IndexBaris + 1, IndexKolom)
-                        Exit For
-                    Next
+                    tempBlokAktif = (IndexBaris + 1, IndexKolom)
                 End If
             Next
 
             Me.PapanPermainan = tempPapan
             Me.BlokAktif = tempBlokAktif
         Next
-    End Sub
 
-    Public Function GeserX_BlokAktif(jumlah_gerak As Int16) As Boolean
+        Return JumlahBlokTurun
+    End Function
+
+    Public Function GeserX_BlokAktif(jumlah_gerak As Short) As Boolean
         Dim tempPapan = Me.DuplikatPapan(Me.PapanPermainan)
         Dim tempBlokAktif = Me.DuplikatBlokAktif(Me.BlokAktif)
 
         Dim BentrokanHimpunanMatrix As Boolean = False
         Dim StepTraverse = 1 ' ke arah kanan
-        Dim iBentrokSearch = Me.BlokAktif.Count - 1
-        Dim toBentrokSearch = 0
-        Dim stepBentrokSearch = -1
 
         ' Jika ingin digeser ke kiri
         If jumlah_gerak < 0 Then
             StepTraverse = -1 ' ke arah kiri
-
-            ' Mulai cari bentrokan dari arah kanan
-            iBentrokSearch = 0
-            toBentrokSearch = Me.BlokAktif.Count - 1
-            stepBentrokSearch = 1
         End If
 
         ' Jika tidak ada blok aktif, ignore
-        If Me.BlokAktif.Count = 0 OrElse Me.TipeBlokAktif = String.Empty Then
+        If Not Me.BlokAktif.HasValue Then
             Return False
         End If
 
-        For i = iBentrokSearch To toBentrokSearch Step stepBentrokSearch
-            Dim pair = Me.BlokAktif(i)
+        Dim BlokAktif = Me.BlokAktif
 
-            ' Pastikan tidak keluar dari area permainan
-            If ((pair.Item2 + jumlah_gerak) < 0) OrElse (pair.Item2 + jumlah_gerak) > 9 Then
-                BentrokanHimpunanMatrix = True
-                Exit For
-            End If
+        ' Pastikan tidak keluar dari area permainan
+        If ((BlokAktif.Value.Item2 + jumlah_gerak) < 0) OrElse (BlokAktif.Value.Item2 + jumlah_gerak) >= Me.TotalKolom Then
+            Return False
+        End If
 
-            ' Jika blok matrix ini tidak kosong
-            If Not IsKosong(tempPapan, pair.Item1, pair.Item2) Then
-                Dim StartIndex = pair.Item2 + StepTraverse
-                Dim StopIndex = pair.Item2 + jumlah_gerak
+        ' Jika blok matrix ini tidak kosong
+        If Not IsKosong(tempPapan, BlokAktif.Value.Item1, BlokAktif.Value.Item2) Then
+            Dim StartIndex = BlokAktif.Value.Item2 + StepTraverse
+            Dim StopIndex = BlokAktif.Value.Item2 + jumlah_gerak
 
-                ' Cek apakah selama perjalanan ke tujuan jumlah gerak akan terjadi bentrokan
-                For i2 = StartIndex To StopIndex Step StepTraverse
-                    If Not IsKosong(tempPapan, pair.Item1, i2) Then
-                        ' Ada bentrokan
-                        BentrokanHimpunanMatrix = True
-                        Exit For
-                    End If
-                Next
-
-                If BentrokanHimpunanMatrix Then
+            ' Cek apakah selama perjalanan ke tujuan jumlah gerak akan terjadi bentrokan
+            For i2 = StartIndex To StopIndex Step StepTraverse
+                If Not IsKosong(tempPapan, BlokAktif.Value.Item1, i2) Then
+                    ' Ada bentrokan
+                    BentrokanHimpunanMatrix = True
                     Exit For
                 End If
+            Next
 
-                ' Pindahkan bloknya
-                tempPapan(pair.Item1)(pair.Item2 + jumlah_gerak) = tempPapan(pair.Item1)(pair.Item2)
-                tempPapan(pair.Item1)(pair.Item2) = Nothing
-                tempBlokAktif(i) = (pair.Item1, pair.Item2 + jumlah_gerak)
+            If BentrokanHimpunanMatrix Then
+                Return False
             End If
-        Next
+
+            ' Pindahkan bloknya
+            tempPapan(BlokAktif.Value.Item1)(BlokAktif.Value.Item2 + jumlah_gerak) = tempPapan(BlokAktif.Value.Item1)(BlokAktif.Value.Item2)
+            tempPapan(BlokAktif.Value.Item1)(BlokAktif.Value.Item2) = Nothing
+            tempBlokAktif = (BlokAktif.Value.Item1, BlokAktif.Value.Item2 + jumlah_gerak)
+        End If
 
         If BentrokanHimpunanMatrix Then
             tempPapan.Clear()
-            tempBlokAktif.Clear()
             Return False
         End If
 
@@ -186,9 +169,92 @@
         Return True
     End Function
 
+    Public Function GeserY_BlokAktif(jumlah_gerak As Short) As Boolean
+        Dim tempPapan = Me.DuplikatPapan(Me.PapanPermainan)
+        Dim tempBlokAktif = Me.DuplikatBlokAktif(Me.BlokAktif)
+
+        Dim BentrokanHimpunanMatrix As Boolean = False
+        Dim StepTraverse = 1 ' ke arah bawah
+
+        ' Jika ingin digeser ke kiri
+        If jumlah_gerak < 0 Then
+            StepTraverse = -1 ' ke arah atas
+        End If
+
+        ' Jika tidak ada blok aktif, ignore
+        If Not Me.BlokAktif.HasValue Then
+            Return False
+        End If
+
+        Dim BlokAktif = Me.BlokAktif
+
+        ' Pastikan tidak keluar dari area permainan
+        If ((BlokAktif.Value.Item1 + jumlah_gerak) < 0) OrElse (BlokAktif.Value.Item1 + jumlah_gerak) >= Me.TotalBaris Then
+            Return False
+        End If
+
+        ' Jika blok matrix ini tidak kosong
+        If Not IsKosong(tempPapan, BlokAktif.Value.Item1, BlokAktif.Value.Item2) Then
+            Dim StartIndex = BlokAktif.Value.Item1 + StepTraverse
+            Dim StopIndex = BlokAktif.Value.Item1 + jumlah_gerak
+
+            ' Cek apakah selama perjalanan ke tujuan jumlah gerak akan terjadi bentrokan
+            For i2 = StartIndex To StopIndex Step StepTraverse
+                If Not IsKosong(tempPapan, i2, BlokAktif.Value.Item2) Then
+                    ' Ada bentrokan
+                    BentrokanHimpunanMatrix = True
+                    Exit For
+                End If
+            Next
+
+            If BentrokanHimpunanMatrix Then
+                Return False
+            End If
+
+            ' Pindahkan bloknya
+            tempPapan(BlokAktif.Value.Item1 + jumlah_gerak)(BlokAktif.Value.Item2) = tempPapan(BlokAktif.Value.Item1)(BlokAktif.Value.Item2)
+            tempPapan(BlokAktif.Value.Item1)(BlokAktif.Value.Item2) = Nothing
+            tempBlokAktif = (BlokAktif.Value.Item1 + jumlah_gerak, BlokAktif.Value.Item2)
+        End If
+
+        If BentrokanHimpunanMatrix Then
+            tempPapan.Clear()
+            Return False
+        End If
+
+        Me.PapanPermainan = tempPapan
+        Me.BlokAktif = tempBlokAktif
+        Return True
+    End Function
+
+    Public Function BlokBisaDiturunkan(IndexBaris As Integer, IndexKolom As Integer) As Boolean
+        Return Me.BlokBisaDiturunkan(Me.PapanPermainan, IndexBaris, IndexKolom)
+    End Function
+
+    Public Function BlokBisaDiturunkan(ByRef tempPapan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As Boolean
+        ' Jika blok matrix ini tidak kosong
+        If Not IsKosong(tempPapan, IndexBaris, IndexKolom) Then
+
+            If IndexBaris >= (Me.TotalBaris - 1) Then
+                ' Tidak bisa diturunkan, sudah keluar area permainan
+                Return False
+            End If
+
+            ' Jika blok matrix dibawahnya tidak kosong (sudah terisi)
+            If Not IsKosong(tempPapan, IndexBaris + 1, IndexKolom) Then
+                ' Ada bentrokan dan gak bisa diturunkan
+                Return False
+            End If
+
+            Return True
+        Else
+            ' Jika kosong, tidak perlu diturunkan
+            Return False
+        End If
+    End Function
 
 #Region "Function Pembantu"
-    Public Function IsKosong(ByRef blok As Color?) As Boolean
+    Public Function IsKosong(ByRef blok As Char?) As Boolean
         Return (blok Is Nothing)
     End Function
 
@@ -196,26 +262,24 @@
         Return Me.IsKosong(Me.PapanPermainan, IndexBaris, IndexKolom)
     End Function
 
-    Public Function IsKosong(Papan As List(Of List(Of Color?)), IndexBaris As Integer, IndexKolom As Integer) As Boolean
+    Public Function IsKosong(Papan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As Boolean
         Return Me.IsKosong(Papan(IndexBaris)(IndexKolom))
     End Function
 
-
-
-    Public Function AmbilData(IndexBaris As Integer, IndexKolom As Integer) As Color?
+    Public Function AmbilData(IndexBaris As Integer, IndexKolom As Integer) As String
         Return Me.AmbilData(Me.PapanPermainan, IndexBaris, IndexKolom)
     End Function
 
-    Public Function AmbilData(Papan As List(Of List(Of Color?)), IndexBaris As Integer, IndexKolom As Integer) As Color?
+    Public Function AmbilData(Papan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As String
         Return Papan(IndexBaris)(IndexKolom)
     End Function
 
 
-    Public Function AmbilKumpulanKolom(IndexBaris As Integer, Optional TanpaBlokKosong As Boolean = False) As List(Of Color?)
+    Public Function AmbilKumpulanKolom(IndexBaris As Integer, Optional TanpaBlokKosong As Boolean = False) As List(Of Char?)
         Dim a = Me.PapanPermainan(IndexBaris)
 
         If TanpaBlokKosong Then
-            Dim b As New List(Of Color?)
+            Dim b As New List(Of Char?)
 
             For i = 0 To a.Count - 1
                 If (Me.IsKosong(a(i))) Then
@@ -229,21 +293,21 @@
         Return a
     End Function
 
-    Public Function AmbilPointerData() As List(Of List(Of Color?))
+    ''' <summary>
+    ''' Ambil pointer ke variable papan permainan pada class DataTetris.<br></br>
+    ''' Perubahan akan langsung mempengaruhi variable internal class DataTetris
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function AmbilPointerData() As List(Of List(Of Char?))
         Return PapanPermainan
     End Function
 
-    Public Sub SetBlokAktif(tipe As String, blok As List(Of (Integer, Integer)))
+    Public Sub SetBlokAktif(blok As (Integer, Integer)?)
         Me.BlokAktif = blok
-        Me.TipeBlokAktif = tipe
     End Sub
 
-    Public Function GetBlokAktif() As List(Of (Integer, Integer))
+    Public Function GetBlokAktif() As (Integer, Integer)?
         Return Me.BlokAktif
-    End Function
-
-    Public Function GetTipeBlokAktif() As String
-        Return Me.TipeBlokAktif
     End Function
 #End Region
 

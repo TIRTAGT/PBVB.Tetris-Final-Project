@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class Menu
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+Partial Class HowToPlay
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,12 +20,11 @@ Partial Class Menu
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Label1 = New Label()
-        StartTetrisAction = New Label()
-        Label3 = New Label()
         ExitAction = New Label()
+        Label2 = New Label()
         SuspendLayout()
         ' 
         ' Label1
@@ -34,68 +33,53 @@ Partial Class Menu
         Label1.BackColor = Color.Transparent
         Label1.Font = New Font("Magneto", 23.7966118F, FontStyle.Bold, GraphicsUnit.Point)
         Label1.ForeColor = Color.WhiteSmoke
-        Label1.Location = New Point(49, 96)
+        Label1.Location = New Point(34, 18)
         Label1.Name = "Label1"
-        Label1.Size = New Size(275, 96)
+        Label1.Size = New Size(301, 48)
         Label1.TabIndex = 3
-        Label1.Text = "Kelompok 4" & vbCrLf & "Tetris"
+        Label1.Text = "How To Play"
         Label1.TextAlign = ContentAlignment.TopCenter
-        ' 
-        ' StartTetrisAction
-        ' 
-        StartTetrisAction.BackColor = Color.LightGray
-        StartTetrisAction.Cursor = Cursors.Hand
-        StartTetrisAction.Font = New Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point)
-        StartTetrisAction.Location = New Point(76, 234)
-        StartTetrisAction.Name = "StartTetrisAction"
-        StartTetrisAction.Size = New Size(215, 43)
-        StartTetrisAction.TabIndex = 4
-        StartTetrisAction.Text = "START"
-        StartTetrisAction.TextAlign = ContentAlignment.MiddleCenter
-        ' 
-        ' Label3
-        ' 
-        Label3.BackColor = Color.LightGray
-        Label3.Cursor = Cursors.Hand
-        Label3.Font = New Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point)
-        Label3.Location = New Point(76, 306)
-        Label3.Name = "Label3"
-        Label3.Size = New Size(215, 43)
-        Label3.TabIndex = 5
-        Label3.Text = "HOW TO PLAY"
-        Label3.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' ExitAction
         ' 
         ExitAction.BackColor = Color.LightGray
         ExitAction.Cursor = Cursors.Hand
-        ExitAction.Font = New Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point)
-        ExitAction.Location = New Point(76, 380)
+        ExitAction.Font = New Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point)
+        ExitAction.Location = New Point(120, 438)
         ExitAction.Name = "ExitAction"
         ExitAction.Size = New Size(215, 43)
         ExitAction.TabIndex = 6
-        ExitAction.Text = "EXIT"
+        ExitAction.Text = "BACK TO MENU"
         ExitAction.TextAlign = ContentAlignment.MiddleCenter
         ' 
-        ' Menu
+        ' Label2
+        ' 
+        Label2.BackColor = Color.Transparent
+        Label2.Font = New Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point)
+        Label2.ForeColor = Color.Black
+        Label2.Location = New Point(12, 79)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(355, 337)
+        Label2.TabIndex = 7
+        Label2.Text = "D / Panah Kanan = Geser blok ke Kanan" & vbCrLf & "A / Panah Kiri = Geser blok ke Kiri" & vbCrLf & "S / Panah Bawah = Percepat penurunan blok" & vbCrLf & "Q = Putar blok -90 derajat" & vbCrLf & "E = Putar blok 90 derajat"
+        ' 
+        ' HowToPlay
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         BackgroundImage = My.Resources.Resources.Unsaved_Image_1
         BackgroundImageLayout = ImageLayout.Stretch
         ClientSize = New Size(373, 520)
+        Controls.Add(Label2)
         Controls.Add(ExitAction)
-        Controls.Add(Label3)
-        Controls.Add(StartTetrisAction)
         Controls.Add(Label1)
         DoubleBuffered = True
-        Name = "Menu"
+        Name = "HowToPlay"
         Text = "Kelompok 4 - Tetris ( Menu )"
         ResumeLayout(False)
         PerformLayout()
     End Sub
     Friend WithEvents Label1 As Label
-    Friend WithEvents StartTetrisAction As Label
-    Friend WithEvents Label3 As Label
     Friend WithEvents ExitAction As Label
+    Friend WithEvents Label2 As Label
 End Class
