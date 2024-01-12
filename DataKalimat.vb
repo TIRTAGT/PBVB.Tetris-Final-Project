@@ -2,19 +2,29 @@
     Private ReadOnly RNGenerator As New System.Random()
 
     Private ReadOnly KalimatMudah As String() = New String() {
+        "If",
         "Ada",
         "Apa",
         "iTi",
         "Asap",
+        "Else",
         "Buku",
         "Kuku",
+        "True",
         "Mata",
         "Sari",
         "Roti",
-        "Titan"
+        "While",
+        "Titan",
+        "Katon",
+        "Dioba",
+        "Akmal"
     }
 
     Private ReadOnly KalimatSulit As String() = New String() {
+        "Tetris",
+        "Matthew",
+        "Bracken",
         "Makanan",
         "Telepon",
         "Institut",
@@ -27,7 +37,7 @@
     Private KumpulanHurufTerpilih As New List(Of Char)
     Private HurufRandomSebelumnya As Char = ""
     Private JumlahHurufRandomSama As Integer = 0
-    Private ReadOnly BatasJumlahHurufRandomSama As Integer = 3
+    Private ReadOnly BatasJumlahHurufRandomSama As Integer = 2
 
 
     Public Sub New()

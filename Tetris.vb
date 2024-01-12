@@ -9,87 +9,78 @@ Public Class Tetris
     Dim PapanGame As New DataTetris
     Dim ObjekKalimat As New DataKalimat
     Dim TotalScore As UInteger = 0
+    Dim Level As Integer = 1
+
+    ' NOTE: Semua game tick dihitung dalam milisecond (ms)
+    ReadOnly GameTickAwal = 1100
+    ReadOnly ScalingGameTickPerLevel = -60 ' Rumus perubahan tick setiap level: GameTick + (ScalingGameTickPerLevel * Level)
 
     Private Sub Tetris_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Paksa font area permainan agar sama lebarnya (Monospace)
         GameArea.Font = New Font(FontFamily.GenericMonospace, GameArea.Font.Size, GameArea.Font.Style)
-        Dim a = PapanGame.AmbilPointerData()
-        'a(0)(0) = "A"
-        'a(0)(1) = "B"
-        'a(0)(2) = "C"
-        'a(0)(3) = "D"
-        'a(0)(4) = "E"
-        'a(0)(5) = "F"
-        'a(1)(0) = "G"
-        'a(1)(1) = "H"
-        'a(1)(2) = "I"
-        'a(1)(3) = "J"
-        'a(1)(4) = "K"
-        'a(1)(5) = "L"
-        'a(2)(0) = "M"
-        'a(2)(1) = "N"
-        'a(2)(2) = "O"
-        'a(2)(3) = "P"
-        'a(2)(4) = "Q"
-        'a(2)(5) = "R"
-        'a(3)(0) = "S"
-        'a(3)(1) = "T"
-        'a(3)(2) = "U"
-        'a(3)(3) = "V"
-        'a(3)(4) = "W"
-        'a(3)(5) = "X"
-        'a(4)(0) = "Y"
-        'a(4)(1) = "Z"
 
-        'Me.PapanGame.SetBlokAktif((0, 0))
+        ' Ubah warna elemen menggunakan nilai RGB secara langsung
+        GameArea.BackColor = Color.FromArgb(56, 0, 102)
+        Panel1.BackColor = Color.FromArgb(56, 0, 102)
+        Panel3.BackColor = Color.FromArgb(56, 0, 102)
 
-        ' Generate kalimat dasar
-        ObjekKalimat.GenerateKalimatTerpilih(2, 0)
+        ' Generate kalimat awal game
+        If TotalScore > 0 Then
+            ObjekKalimat.GenerateKalimatTerpilih(1 + Level, TotalScore / 10)
+        Else
+            ObjekKalimat.GenerateKalimatTerpilih(1 + Level, 0)
+        End If
+
         ObjekKalimat.RefreshHurufTerpilih()
         RefreshUIListKalimat()
 
+        ' Siapkan music player
         Me.MusicAudioPlayer = New WindowsMediaPlayer
-        'Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, "PublicResources/Tetris 99 - Main Theme.mp3")
-        'Me.MusicAudioPlayer.controls.play()
-        AddHandler Me.MusicAudioPlayer.EndOfStream, AddressOf Me.MusicLoop
+        Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, "PublicResources/Tom and Jerry at MGM performed by the John Wilson Orchestra 2013.mp3")
+        Me.MusicAudioPlayer.controls.play()
+        AddHandler Me.MusicAudioPlayer.PlayStateChange, AddressOf Me.MusicLoop
 
-        ' Buat timer permainan, speed: 2 FPS
+        ' Buat timer untuk refresh/update ui permainan
         Me.TickGame = New Timer With {
-            .Interval = 550
+            .Interval = GameTickAwal
         }
         AddHandler Me.TickGame.Tick, AddressOf OnGameTick
         Me.TickGame.Enabled = True
 
+
+        ' Nyalakan cache form ini (seharusnya tidak perlu, tapi takut sewaktu waktu terpengaruh oleh GameArea...)
         Me.DoubleBuffered = True
+
+        ' Paksa cache GameArea agar tidak berkedip saat digambar manual
+        ' Secara default, properti cache panel tidak boleh diubah manual, tapi bisa dipaksa 
+        ' (source: https://stackoverflow.com/questions/4777135/how-can-i-draw-on-panel-so-it-does-not-blink)
         Dim flags As BindingFlags = BindingFlags.Instance Or BindingFlags.NonPublic
         Dim propertyInfo As PropertyInfo = Me.GameArea.GetType().GetProperty("DoubleBuffered", flags)
         propertyInfo.SetValue(Me.GameArea, True, Nothing)
     End Sub
 
+    ''' <summary>
+    ''' Function yang akan dipanggil setiap refresh game (seperti Tick pada NodeJS, Update pada Unity)
+    ''' </summary>
     Private Sub OnGameTick()
-        Console.WriteLine("tick")
-        'PapanGame.Turunkan()
-
-        ' Jika kehabisan kalimat, refresh
-        Dim JumlahKalimatTerpilih = ObjekKalimat.GetKalimatTerpilih().Count
-        If JumlahKalimatTerpilih = 0 Then
-            ObjekKalimat.GenerateKalimatTerpilih(2, 0)
-            ObjekKalimat.RefreshHurufTerpilih()
-            RefreshUIListKalimat()
-        End If
-
-        ' Jika blok aktif sudah tidak bisa diturunkan, kunci.
         Dim BlokAktifSaatIni = PapanGame.GetBlokAktif()
+
+        ' Jika ada blok akhir
         If BlokAktifSaatIni.HasValue Then
+            ' Apakah blok saat ini masih bisa diturunkan
             If PapanGame.BlokBisaDiturunkan(BlokAktifSaatIni.Value.Item1, BlokAktifSaatIni.Value.Item2) Then
+                ' Turunkan blok aktif kebawah
                 PapanGame.GeserY_BlokAktif(1)
             Else
+                ' Cek apakah ada kalimat yang terbentuk
                 Dim Nilai = DeteksiKataCocok()
 
-                ' Jika ada blok yang cocok, isi semua blok kosong dengan blok ada (turun)
+                ' Jika ada kalimat yang terbentuk oleh sebuah blok
                 If Nilai > 0 Then
                     ' Update score
                     TotalScore += Nilai
                     ScoreValueLabel.Text = TotalScore
+
                     RefreshUIListKalimat()
 
                     ' Turunkan semua baris yang bisa diturunkan
@@ -98,26 +89,43 @@ Public Class Tetris
                         b = PapanGame.Turunkan()
                     End While
                 Else
+                    ' Ganti ke blok selanjutnya
                     RefreshBlokSelanjutnya()
                 End If
             End If
         Else
+            ' Ganti ke blok selanjutnya
             RefreshBlokSelanjutnya()
         End If
 
-        ' Refresh area permainan (saat ini 1.8 FPS)
+        ' Refresh area permainan
         Me.GameArea.Refresh()
 
+        ' Cek lagi status blok aktif saat ini
         BlokAktifSaatIni = PapanGame.GetBlokAktif()
+
+        ' Jika tidak ada blok aktif
         If Not BlokAktifSaatIni.HasValue Then
+            ' Cek apakah masih ada kalimat target yang tersisa
             If ObjekKalimat.GetKalimatTerpilih(True).Count > 0 Then
                 ' Masih ada kalimat tapi tidak bisa menaruh blok, anggap papan permainan penuh dan Game Over
 
-                ' TODO: Aku bingung buat UI bagus untuk game over, tunggu katonisasi aja.
-                ' Untuk sementara, end task diri sendiri
-                Application.Exit()
+                ' Matikan music dan keluar
+                Me.MusicAudioPlayer.close()
+                Me.Close()
+                Me.Dispose()
             Else
+                ' Seluruh kalimat target pada level ini habis, generate baru lagi
 
+                ' Pastikan tidak melebihi 8 kalimat pada satu ronde
+                Level = Math.Clamp(Level + 1, 1, 8)
+
+                ObjekKalimat.GenerateKalimatTerpilih(Level, TotalScore / 20)
+                ObjekKalimat.RefreshHurufTerpilih()
+                RefreshUIListKalimat()
+
+                ' Percepat tick/refresh game untuk level yang lebih tinggi
+                Me.TickGame.Interval = Math.Clamp(GameTickAwal + (ScalingGameTickPerLevel * Level), 300, GameTickAwal)
             End If
         End If
     End Sub
@@ -138,6 +146,8 @@ Public Class Tetris
         If a(0)(0) = "~" Then
             TargetText1Label.Font = New Font(TargetText1Label.Font, FontStyle.Strikeout)
             TargetText1Label.Text = TargetText1Label.Text.Substring(1)
+        Else
+            TargetText1Label.Font = New Font(TargetText1Label.Font, FontStyle.Bold)
         End If
         If a.Count < 2 Then Return
 
@@ -145,6 +155,8 @@ Public Class Tetris
         If a(1)(0) = "~" Then
             TargetText2Label.Font = New Font(TargetText2Label.Font, FontStyle.Strikeout)
             TargetText2Label.Text = TargetText2Label.Text.Substring(1)
+        Else
+            TargetText2Label.Font = New Font(TargetText2Label.Font, FontStyle.Bold)
         End If
         If a.Count < 3 Then Return
 
@@ -152,6 +164,8 @@ Public Class Tetris
         If a(2)(0) = "~" Then
             TargetText3Label.Font = New Font(TargetText3Label.Font, FontStyle.Strikeout)
             TargetText3Label.Text = TargetText3Label.Text.Substring(1)
+        Else
+            TargetText3Label.Font = New Font(TargetText3Label.Font, FontStyle.Bold)
         End If
         If a.Count < 4 Then Return
 
@@ -159,6 +173,8 @@ Public Class Tetris
         If a(3)(0) = "~" Then
             TargetText4Label.Font = New Font(TargetText4Label.Font, FontStyle.Strikeout)
             TargetText4Label.Text = TargetText4Label.Text.Substring(1)
+        Else
+            TargetText4Label.Font = New Font(TargetText4Label.Font, FontStyle.Bold)
         End If
         If a.Count < 5 Then Return
 
@@ -166,6 +182,8 @@ Public Class Tetris
         If a(4)(0) = "~" Then
             TargetText5Label.Font = New Font(TargetText5Label.Font, FontStyle.Strikeout)
             TargetText5Label.Text = TargetText5Label.Text.Substring(1)
+        Else
+            TargetText5Label.Font = New Font(TargetText5Label.Font, FontStyle.Bold)
         End If
         If a.Count < 6 Then Return
 
@@ -173,6 +191,8 @@ Public Class Tetris
         If a(5)(0) = "~" Then
             TargetText6Label.Font = New Font(TargetText6Label.Font, FontStyle.Strikeout)
             TargetText6Label.Text = TargetText6Label.Text.Substring(1)
+        Else
+            TargetText6Label.Font = New Font(TargetText6Label.Font, FontStyle.Bold)
         End If
         If a.Count < 7 Then Return
 
@@ -180,6 +200,8 @@ Public Class Tetris
         If a(6)(0) = "~" Then
             TargetText7Label.Font = New Font(TargetText7Label.Font, FontStyle.Strikeout)
             TargetText7Label.Text = TargetText7Label.Text.Substring(1)
+        Else
+            TargetText7Label.Font = New Font(TargetText7Label.Font, FontStyle.Bold)
         End If
         If a.Count < 8 Then Return
 
@@ -187,6 +209,8 @@ Public Class Tetris
         If a(7)(0) = "~" Then
             TargetText8Label.Font = New Font(TargetText8Label.Font, FontStyle.Strikeout)
             TargetText8Label.Text = TargetText8Label.Text.Substring(1)
+        Else
+            TargetText8Label.Font = New Font(TargetText8Label.Font, FontStyle.Bold)
         End If
     End Sub
 
@@ -214,7 +238,7 @@ Public Class Tetris
         For baris = 0 To a.Count - 1
             For kolom = 0 To a(baris).Count - 1
 
-                ' Cek apakah ada kalimat terbentuk ke kanan
+                ' Cek apakah ada kalimat yang terbentuk dari kiri ke kanan
                 Dim KalimatTerbentuk_AxisX As String = String.Empty
                 Dim KalimatDitemukan As Boolean = False
 
@@ -260,12 +284,8 @@ Public Class Tetris
                     Exit For
                 End If
 
-                ' Cek apakah ada kalimat terbentuk ke atas
+                ' Cek apakah ada kalimat yang terbentuk dari atas ke bawah
                 Dim KalimatTerbentuk_AxisY As String = String.Empty
-
-                If Not a(baris)(kolom).HasValue Then
-                    Continue For
-                End If
 
                 KalimatTerbentuk_AxisY += a(baris)(kolom)
 
@@ -307,26 +327,72 @@ Public Class Tetris
                     Next
                     Exit For
                 End If
+
+                ' Cek apakah ada kalimat yang terbentuk dari bawah ke atas
+                Dim KalimatTerbentuk_AxisYReverse As String = String.Empty
+
+                KalimatTerbentuk_AxisYReverse += a(baris)(kolom)
+
+                If ObjekKalimat.SearchKalimat(KalimatTerbentuk_AxisYReverse, True) Then
+                    For LookupBaris = (baris - 1) To 0 Step -1
+                        Dim LookedKolom = a(LookupBaris)(kolom)
+
+                        If Not LookedKolom.HasValue Then
+                            Exit For
+                        End If
+
+                        KalimatTerbentuk_AxisYReverse += a(LookupBaris)(kolom)
+                        If ObjekKalimat.SearchKalimat(KalimatTerbentuk_AxisYReverse, False) Then
+                            ' Ditemukan kalimat yang sangat cocok
+                            KalimatDitemukan = True
+                            ObjekKalimat.DisableKalimat(KalimatTerbentuk_AxisYReverse)
+                            ObjekKalimat.RefreshHurufTerpilih()
+                            Exit For
+                        ElseIf ObjekKalimat.SearchKalimat(KalimatTerbentuk_AxisYReverse, True) Then
+                            ' Ditemukan kalimat yang diawali dengan huruf yang sama
+                        Else
+                            ' Tidak ditemukan
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If KalimatDitemukan Then
+                    TotalPoin += 1
+                    ' Hapus semua kolom selanjutnya pada baris yang ditemukan kalimat ini
+                    For i = baris To (baris - KalimatTerbentuk_AxisYReverse.Length) Step -1
+                        For i2 = kolom To a(i).Count - 1
+
+                            If a(i)(i2).HasValue Then
+                                TotalPoin += 1
+                                a(i)(i2) = Nothing
+                            End If
+                        Next
+                    Next
+                    Exit For
+                End If
             Next
         Next
 
         Return TotalPoin
     End Function
 
-    Private Sub MusicLoop()
-        Console.WriteLine("MusicLoop()")
-        Me.MusicAudioPlayer.controls.play()
+    Private Sub MusicLoop(e As Integer)
+        ' Jika musik sudah berhenti, mulai dari awal lagi
+        If e = WMPPlayState.wmppsStopped Then
+            Me.MusicAudioPlayer.controls.play()
+        End If
     End Sub
 
     Private Sub GameArea_Paint(sender As Object, e As PaintEventArgs) Handles GameArea.Paint
         Dim MarginLeft As Integer = 5
         Dim BlockBorderSize As Integer = 4
 
-        Using blackPen As New Pen(Color.Black)
-            e.Graphics.DrawLine(blackPen, MarginLeft, 0, MarginLeft, GameArea.Size.Height)
+        Using GuideLinePen As New Pen(Color.LightGray)
+            e.Graphics.DrawLine(GuideLinePen, MarginLeft, 0, MarginLeft, GameArea.Size.Height)
 
             For i = (MarginLeft + 44) To GameArea.Size.Width Step 44
-                e.Graphics.DrawLine(blackPen, i, 0, i, GameArea.Size.Height)
+                e.Graphics.DrawLine(GuideLinePen, i, 0, i, GameArea.Size.Height)
             Next
         End Using
 
@@ -342,17 +408,17 @@ Public Class Tetris
                     BorderRects(1) = New Rectangle(StartX, StartY, BlockBorderSize, 45) ' Left
                     BorderRects(2) = New Rectangle(StartX + 44 - BlockBorderSize + 1, StartY, BlockBorderSize, 45) ' Right
                     BorderRects(3) = New Rectangle(StartX, StartY + 45 - BlockBorderSize, 44, BlockBorderSize) ' Bottom
-                    e.Graphics.FillRectangles(New SolidBrush(Color.Black), BorderRects)
+                    e.Graphics.FillRectangles(New SolidBrush(Color.LightGray), BorderRects)
 
                     Dim text = PapanGame.AmbilData(baris - 1, kolom - 1)
-                    e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.Black), StartX + 7, StartY + 5)
+                    e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 7, StartY + 5)
                 End If
             Next
         Next
-
     End Sub
 
     Private Sub Tetris_FormClosing()
+        ' Jika objek musik masih ada, hentikan dan hapus dari memori.
         If Me.MusicAudioPlayer IsNot Nothing Then
             Me.MusicAudioPlayer.controls.stop()
             Me.MusicAudioPlayer.close()
@@ -362,28 +428,41 @@ Public Class Tetris
     End Sub
 
     Private Sub Tetris_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
-        If e.KeyCode = Keys.D Then
-            Me.TickGame.Enabled = True
+        ' Jika D/Right ditekan, geser blok aktif ke kanan
+        If e.KeyCode = Keys.D OrElse e.KeyCode = Keys.Right Then
             Me.PapanGame.GeserX_BlokAktif(1)
             Me.GameArea.Refresh()
             Return
         End If
 
-        If e.KeyCode = Keys.A Then
-            Me.TickGame.Enabled = True
+        ' Jika A/Left ditekan, geser blok aktif ke kiri
+        If e.KeyCode = Keys.A OrElse e.KeyCode = Keys.Left Then
             Me.PapanGame.GeserX_BlokAktif(-1)
             Me.GameArea.Refresh()
             Return
         End If
 
+        ' Jika S ditekan, geser blok aktif ke bawah
         If e.KeyCode = Keys.S Then
-            Me.TickGame.Enabled = False
+            Me.TickGame.Enabled = False ' Matikan tick/refresh otomatis
+            Me.OnGameTick() ' Jalankan tick/refresh seperti sekali agak blok turun
+        End If
+
+        ' Jika spasi ditekan, turunkan blok secara langsung
+        If e.KeyCode = Keys.Space Then
+            Dim a = PapanGame.Turunkan()
+
+            ' Selama masih bisa diturunkan, turunkan lagi
+            While a
+                a = PapanGame.Turunkan()
+            End While
+
             Me.OnGameTick()
-            Me.GameArea.Refresh()
         End If
     End Sub
 
     Private Sub Tetris_KeyUp(sender As Object, e As KeyEventArgs) Handles MyBase.KeyUp
+        ' Jika tombol yang ditekan sudah diangkat, nyalakan lagi tick/refresh otomatis
         Me.TickGame.Enabled = True
     End Sub
 End Class

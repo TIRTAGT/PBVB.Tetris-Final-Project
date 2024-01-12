@@ -4,18 +4,24 @@
     Public TotalKolom As Integer = 0
     Public TotalBaris As Integer = 0
 
+    ''' <summary>
+    ''' Inisialisasi Papan Game Tetris Baru
+    ''' </summary>
     Public Sub New()
         Me.PapanPermainan = New List(Of List(Of Char?))
         Me.Inisialisasi()
     End Sub
 
+    ''' <summary>
+    '''  Inisialisasi Papan Ggame Tetris berdasarkan pointer ke papan yang sudah ada
+    ''' </summary>
+    ''' <param name="Papan"></param>
     Public Sub New(ByRef Papan As List(Of List(Of Char?)))
         Me.PapanPermainan = Papan
-        Me.Inisialisasi()
     End Sub
 
     Private Sub Inisialisasi()
-        'Buat array/list papan permainan 10x20 (baru: 6.31x10.97)
+        'Buat array/list papan permainan 6.31x10.97 (tapi dibulatkan)
         TotalKolom = 6
         TotalBaris = 11
 

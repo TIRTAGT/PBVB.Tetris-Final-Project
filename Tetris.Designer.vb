@@ -43,7 +43,7 @@ Partial Class Tetris
         ' 
         ' GameArea
         ' 
-        GameArea.BackColor = Color.LightGray
+        GameArea.BackColor = Color.Silver
         GameArea.BorderStyle = BorderStyle.Fixed3D
         GameArea.Font = New Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point)
         GameArea.Location = New Point(32, 103)
@@ -56,26 +56,28 @@ Partial Class Tetris
         StartTetrisAction.BackColor = Color.LightGray
         StartTetrisAction.Cursor = Cursors.Hand
         StartTetrisAction.Font = New Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point)
-        StartTetrisAction.Location = New Point(32, 9)
+        StartTetrisAction.ForeColor = Color.Indigo
+        StartTetrisAction.Location = New Point(32, 25)
         StartTetrisAction.Name = "StartTetrisAction"
-        StartTetrisAction.Size = New Size(215, 43)
+        StartTetrisAction.Size = New Size(522, 43)
         StartTetrisAction.TabIndex = 5
-        StartTetrisAction.Text = "TETRIS"
+        StartTetrisAction.Text = "GAMES TETRIS"
         StartTetrisAction.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' Panel1
         ' 
+        Panel1.BorderStyle = BorderStyle.Fixed3D
         Panel1.Controls.Add(Panel2)
         Panel1.Controls.Add(ScoreValueLabel)
         Panel1.Controls.Add(Label1)
-        Panel1.Location = New Point(353, 207)
+        Panel1.Location = New Point(353, 103)
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(201, 105)
         Panel1.TabIndex = 6
         ' 
         ' Panel2
         ' 
-        Panel2.BackColor = Color.Gray
+        Panel2.BackColor = Color.LightGray
         Panel2.Location = New Point(25, 84)
         Panel2.Name = "Panel2"
         Panel2.Size = New Size(150, 3)
@@ -83,7 +85,9 @@ Partial Class Tetris
         ' 
         ' ScoreValueLabel
         ' 
-        ScoreValueLabel.Font = New Font("Segoe UI", 12.20339F, FontStyle.Bold, GraphicsUnit.Point)
+        ScoreValueLabel.BackColor = Color.Transparent
+        ScoreValueLabel.Font = New Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point)
+        ScoreValueLabel.ForeColor = Color.LightGray
         ScoreValueLabel.Location = New Point(30, 42)
         ScoreValueLabel.Name = "ScoreValueLabel"
         ScoreValueLabel.Size = New Size(150, 39)
@@ -96,6 +100,7 @@ Partial Class Tetris
         Label1.AutoSize = True
         Label1.BackColor = Color.Transparent
         Label1.Font = New Font("Segoe UI", 10.5F, FontStyle.Bold, GraphicsUnit.Point)
+        Label1.ForeColor = Color.LightGray
         Label1.Location = New Point(6, 2)
         Label1.Name = "Label1"
         Label1.Size = New Size(57, 25)
@@ -104,6 +109,8 @@ Partial Class Tetris
         ' 
         ' Panel3
         ' 
+        Panel3.BackColor = Color.Transparent
+        Panel3.BorderStyle = BorderStyle.Fixed3D
         Panel3.Controls.Add(TargetText8Label)
         Panel3.Controls.Add(TargetText7Label)
         Panel3.Controls.Add(TargetText6Label)
@@ -112,7 +119,8 @@ Partial Class Tetris
         Panel3.Controls.Add(TargetText3Label)
         Panel3.Controls.Add(TargetText2Label)
         Panel3.Controls.Add(TargetText1Label)
-        Panel3.Location = New Point(353, 320)
+        Panel3.ForeColor = Color.LightGray
+        Panel3.Location = New Point(353, 280)
         Panel3.Name = "Panel3"
         Panel3.Size = New Size(201, 277)
         Panel3.TabIndex = 7
@@ -201,7 +209,7 @@ Partial Class Tetris
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        BackgroundImage = My.Resources.Resources.Unsaved_Image_1
+        BackColor = Color.LightGray
         ClientSize = New Size(576, 659)
         Controls.Add(Panel3)
         Controls.Add(Panel1)

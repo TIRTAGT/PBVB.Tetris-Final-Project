@@ -31,11 +31,11 @@ Partial Class HowToPlay
         ' 
         Label1.AutoSize = True
         Label1.BackColor = Color.Transparent
-        Label1.Font = New Font("Magneto", 23.7966118F, FontStyle.Bold, GraphicsUnit.Point)
-        Label1.ForeColor = Color.WhiteSmoke
+        Label1.Font = New Font("Lucida Bright", 28.0677967F, FontStyle.Bold, GraphicsUnit.Point)
+        Label1.ForeColor = Color.Indigo
         Label1.Location = New Point(34, 18)
         Label1.Name = "Label1"
-        Label1.Size = New Size(301, 48)
+        Label1.Size = New Size(318, 52)
         Label1.TabIndex = 3
         Label1.Text = "How To Play"
         Label1.TextAlign = ContentAlignment.TopCenter
@@ -45,7 +45,8 @@ Partial Class HowToPlay
         ExitAction.BackColor = Color.LightGray
         ExitAction.Cursor = Cursors.Hand
         ExitAction.Font = New Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point)
-        ExitAction.Location = New Point(120, 438)
+        ExitAction.ForeColor = Color.Indigo
+        ExitAction.Location = New Point(152, 459)
         ExitAction.Name = "ExitAction"
         ExitAction.Size = New Size(215, 43)
         ExitAction.TabIndex = 6
@@ -54,20 +55,20 @@ Partial Class HowToPlay
         ' 
         ' Label2
         ' 
-        Label2.BackColor = Color.Transparent
+        Label2.BackColor = Color.LightGray
         Label2.Font = New Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point)
-        Label2.ForeColor = Color.Black
-        Label2.Location = New Point(12, 79)
+        Label2.ForeColor = Color.Indigo
+        Label2.Location = New Point(12, 101)
         Label2.Name = "Label2"
-        Label2.Size = New Size(355, 337)
+        Label2.Size = New Size(355, 334)
         Label2.TabIndex = 7
-        Label2.Text = "D / Panah Kanan = Geser blok ke Kanan" & vbCrLf & "A / Panah Kiri = Geser blok ke Kiri" & vbCrLf & "S / Panah Bawah = Percepat penurunan blok" & vbCrLf & "Q = Putar blok -90 derajat" & vbCrLf & "E = Putar blok 90 derajat"
+        Label2.Text = "#D / Panah Kanan = Geser Blok ke Kanan" & vbCrLf & vbCrLf & "#A / Panah Kiri = Geser Blok ke Kiri" & vbCrLf & vbCrLf & "#S / Panah Bawah = Percepat Penurunan Blok" & vbCrLf & vbCrLf & "#Spasi = Langsung Turunkan Blok"
         ' 
         ' HowToPlay
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        BackgroundImage = My.Resources.Resources.Unsaved_Image_1
+        BackColor = Color.LightGray
         BackgroundImageLayout = ImageLayout.Stretch
         ClientSize = New Size(373, 520)
         Controls.Add(Label2)
@@ -75,7 +76,7 @@ Partial Class HowToPlay
         Controls.Add(Label1)
         DoubleBuffered = True
         Name = "HowToPlay"
-        Text = "Kelompok 4 - Tetris ( Menu )"
+        Text = "Team 4 - Tetris ( How To Play )"
         ResumeLayout(False)
         PerformLayout()
     End Sub

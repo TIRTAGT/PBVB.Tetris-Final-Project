@@ -24,11 +24,4 @@
 
         Me.Show()
     End Sub
-
-    Private Sub Menu_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
-        ' FIXME: Jangan skip menu saat nanti ingin dikumpulan (ini hanya untuk mempercepat development)
-        If Me.Visible = True Then
-            StartTetrisAction_Click(sender, e)
-        End If
-    End Sub
 End Class

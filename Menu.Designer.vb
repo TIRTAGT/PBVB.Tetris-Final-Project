@@ -32,13 +32,13 @@ Partial Class Menu
         ' 
         Label1.AutoSize = True
         Label1.BackColor = Color.Transparent
-        Label1.Font = New Font("Magneto", 23.7966118F, FontStyle.Bold, GraphicsUnit.Point)
-        Label1.ForeColor = Color.WhiteSmoke
-        Label1.Location = New Point(49, 96)
+        Label1.Font = New Font("Lucida Bright", 28.0677967F, FontStyle.Bold, GraphicsUnit.Point)
+        Label1.ForeColor = Color.Indigo
+        Label1.Location = New Point(82, 80)
         Label1.Name = "Label1"
-        Label1.Size = New Size(275, 96)
+        Label1.Size = New Size(194, 104)
         Label1.TabIndex = 3
-        Label1.Text = "Kelompok 4" & vbCrLf & "Tetris"
+        Label1.Text = "Team 4" & vbCrLf & "Tetris"
         Label1.TextAlign = ContentAlignment.TopCenter
         ' 
         ' StartTetrisAction
@@ -46,6 +46,7 @@ Partial Class Menu
         StartTetrisAction.BackColor = Color.LightGray
         StartTetrisAction.Cursor = Cursors.Hand
         StartTetrisAction.Font = New Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point)
+        StartTetrisAction.ForeColor = Color.Indigo
         StartTetrisAction.Location = New Point(76, 234)
         StartTetrisAction.Name = "StartTetrisAction"
         StartTetrisAction.Size = New Size(215, 43)
@@ -58,6 +59,7 @@ Partial Class Menu
         Label3.BackColor = Color.LightGray
         Label3.Cursor = Cursors.Hand
         Label3.Font = New Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point)
+        Label3.ForeColor = Color.Indigo
         Label3.Location = New Point(76, 306)
         Label3.Name = "Label3"
         Label3.Size = New Size(215, 43)
@@ -70,6 +72,7 @@ Partial Class Menu
         ExitAction.BackColor = Color.LightGray
         ExitAction.Cursor = Cursors.Hand
         ExitAction.Font = New Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point)
+        ExitAction.ForeColor = Color.Indigo
         ExitAction.Location = New Point(76, 380)
         ExitAction.Name = "ExitAction"
         ExitAction.Size = New Size(215, 43)
@@ -81,7 +84,7 @@ Partial Class Menu
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        BackgroundImage = My.Resources.Resources.Unsaved_Image_1
+        BackColor = Color.LightGray
         BackgroundImageLayout = ImageLayout.Stretch
         ClientSize = New Size(373, 520)
         Controls.Add(ExitAction)
@@ -90,7 +93,7 @@ Partial Class Menu
         Controls.Add(Label1)
         DoubleBuffered = True
         Name = "Menu"
-        Text = "Kelompok 4 - Tetris ( Menu )"
+        Text = "Team 4 - Tetris ( Menu )"
         ResumeLayout(False)
         PerformLayout()
     End Sub
