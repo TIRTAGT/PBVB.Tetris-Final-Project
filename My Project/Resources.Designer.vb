@@ -63,9 +63,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
-        Friend ReadOnly Property Unsaved_Image_1() As System.Drawing.Bitmap
+        Friend ReadOnly Property PauseIcon() As System.Drawing.Bitmap
             Get
-                Dim obj As Object = ResourceManager.GetObject("Unsaved Image 1", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("PauseIcon", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
