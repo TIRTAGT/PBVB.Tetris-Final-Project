@@ -487,6 +487,7 @@ Public Class Tetris
 		If e.KeyCode = Keys.S OrElse e.KeyCode = Keys.Down Then
 			Me.TickGame.Enabled = False ' Matikan tick/refresh otomatis
 			Me.OnGameTick() ' Jalankan tick/refresh seperti sekali agak blok turun
+			Return
 		End If
 
 		' Jika spasi ditekan, turunkan blok secara langsung
@@ -583,4 +584,16 @@ Public Class Tetris
 		Me.Close()
 		Me.Dispose()
 	End Sub
+
+	' Buat arrow keys (tombol panah) termasuk ke event tombol ditekan (Key_Down) dan tombol dilepas (Key_Up)
+	' Secara default, arrow key tidak termasuk ke Key_Down atau Key_Up event
+	' (source: https://stackoverflow.com/questions/1608611/keydown-event-not-firing-with-net-winforms)
+	Protected Overrides Function ProcessCmdKey(ByRef msg As Message, ByVal keydata As Keys) As Boolean
+		If keydata = Keys.Right Or keydata = Keys.Left Or keydata = Keys.Up Or keydata = Keys.Down Then
+			OnKeyDown(New KeyEventArgs(keydata))
+			ProcessCmdKey = True
+		Else
+			ProcessCmdKey = MyBase.ProcessCmdKey(msg, keydata)
+		End If
+	End Function
 End Class
