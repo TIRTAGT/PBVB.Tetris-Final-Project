@@ -74,7 +74,7 @@ Partial Class Tetris
 		Panel1.Controls.Add(Panel2)
 		Panel1.Controls.Add(ScoreValueLabel)
 		Panel1.Controls.Add(Label1)
-		Panel1.Location = New Point(389, 83)
+		Panel1.Location = New Point(345, 84)
 		Panel1.Margin = New Padding(2)
 		Panel1.Name = "Panel1"
 		Panel1.Size = New Size(164, 86)
@@ -128,7 +128,7 @@ Partial Class Tetris
 		Panel3.Controls.Add(TargetText2Label)
 		Panel3.Controls.Add(TargetText1Label)
 		Panel3.ForeColor = Color.LightGray
-		Panel3.Location = New Point(389, 227)
+		Panel3.Location = New Point(345, 228)
 		Panel3.Margin = New Padding(2)
 		Panel3.Name = "Panel3"
 		Panel3.Size = New Size(164, 226)
@@ -226,7 +226,7 @@ Partial Class Tetris
 		' 
 		BackButton.BackColor = Color.Silver
 		BackButton.Font = New Font("Segoe UI", 11F, FontStyle.Bold, GraphicsUnit.Point)
-		BackButton.Location = New Point(26, 597)
+		BackButton.Location = New Point(446, 553)
 		BackButton.Margin = New Padding(2)
 		BackButton.Name = "BackButton"
 		BackButton.Size = New Size(63, 28)
@@ -239,7 +239,7 @@ Partial Class Tetris
 		' 
 		PausePanel.BackgroundImage = My.Resources.Resources.PauseIcon
 		PausePanel.BackgroundImageLayout = ImageLayout.Zoom
-		PausePanel.Location = New Point(357, 84)
+		PausePanel.Location = New Point(404, 551)
 		PausePanel.Margin = New Padding(2)
 		PausePanel.Name = "PausePanel"
 		PausePanel.Size = New Size(28, 30)
@@ -250,7 +250,7 @@ Partial Class Tetris
 		AutoScaleDimensions = New SizeF(96F, 96F)
 		AutoScaleMode = AutoScaleMode.Dpi
 		BackColor = Color.LightGray
-		ClientSize = New Size(569, 598)
+		ClientSize = New Size(528, 596)
 		Controls.Add(PausePanel)
 		Controls.Add(BackButton)
 		Controls.Add(Panel3)
