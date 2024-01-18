@@ -456,13 +456,16 @@ Public Class Tetris
 		Next
 	End Sub
 
-	Private Sub Tetris_FormClosing()
+	Private Sub Tetris_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
 		' Jika objek musik masih ada, hentikan dan hapus dari memori.
 		If Me.MusicAudioPlayer IsNot Nothing Then
 			Me.MusicAudioPlayer.controls.stop()
 			Me.MusicAudioPlayer.close()
 			Me.MusicAudioPlayer = Nothing
 		End If
+
+		TickGame.Enabled = False
+		TickGame.Dispose()
 	End Sub
 
 	Private Sub Tetris_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
@@ -576,7 +579,7 @@ Public Class Tetris
 	End Sub
 
 	Private Sub BackButton_Click(sender As Object, e As EventArgs) Handles BackButton.Click
-		Tetris_FormClosing()
+		Tetris_FormClosing(Nothing, Nothing)
 		Me.Close()
 		Me.Dispose()
 	End Sub
