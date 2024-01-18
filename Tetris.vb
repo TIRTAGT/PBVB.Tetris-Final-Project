@@ -449,12 +449,12 @@ Public Class Tetris
                     BorderRects(3) = New Rectangle(StartX, StartY + 45 - BlockBorderSize, 44, BlockBorderSize) ' Bottom
                     e.Graphics.FillRectangles(New SolidBrush(Color.LightGray), BorderRects)
 
-                    Dim text = PapanGame.AmbilData(baris - 1, kolom - 1)
-                    e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 7, StartY + 5)
-                End If
-            Next
-        Next
-    End Sub
+					Dim text = PapanGame.AmbilData(baris - 1, kolom - 1)
+					e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 10, StartY + 7)
+				End If
+			Next
+		Next
+	End Sub
 
     Private Sub Tetris_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         ' Jika objek musik masih ada, hentikan dan hapus dari memori.
@@ -483,11 +483,12 @@ Public Class Tetris
             Return
         End If
 
-        ' Jika S ditekan, geser blok aktif ke bawah
-        If e.KeyCode = Keys.S OrElse e.KeyCode = Keys.Down Then
-            Me.TickGame.Enabled = False ' Matikan tick/refresh otomatis
-            Me.OnGameTick() ' Jalankan tick/refresh seperti sekali agak blok turun
-        End If
+		' Jika S ditekan, geser blok aktif ke bawah
+		If e.KeyCode = Keys.S OrElse e.KeyCode = Keys.Down Then
+			Me.TickGame.Enabled = False ' Matikan tick/refresh otomatis
+			Me.OnGameTick() ' Jalankan tick/refresh seperti sekali agak blok turun
+			Return
+		End If
 
         ' Jika spasi ditekan, turunkan blok secara langsung
         If e.KeyCode = Keys.Space Then
@@ -578,9 +579,21 @@ Public Class Tetris
         TickGame.Enabled = True
     End Sub
 
-    Private Sub BackButton_Click(sender As Object, e As EventArgs) Handles BackButton.Click
-        Tetris_FormClosing(Nothing, Nothing)
-        Me.Close()
-        Me.Dispose()
-    End Sub
+	Private Sub BackButton_Click(sender As Object, e As EventArgs) Handles BackButton.Click
+		Tetris_FormClosing(Nothing, Nothing)
+		Me.Close()
+		Me.Dispose()
+	End Sub
+
+	' Buat arrow keys (tombol panah) termasuk ke event tombol ditekan (Key_Down) dan tombol dilepas (Key_Up)
+	' Secara default, arrow key tidak termasuk ke Key_Down atau Key_Up event
+	' (source: https://stackoverflow.com/questions/1608611/keydown-event-not-firing-with-net-winforms)
+	Protected Overrides Function ProcessCmdKey(ByRef msg As Message, ByVal keydata As Keys) As Boolean
+		If keydata = Keys.Right Or keydata = Keys.Left Or keydata = Keys.Up Or keydata = Keys.Down Then
+			OnKeyDown(New KeyEventArgs(keydata))
+			ProcessCmdKey = True
+		Else
+			ProcessCmdKey = MyBase.ProcessCmdKey(msg, keydata)
+		End If
+	End Function
 End Class

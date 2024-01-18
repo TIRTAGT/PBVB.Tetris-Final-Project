@@ -13,7 +13,7 @@
 	End Sub
 
 	''' <summary>
-	'''  Inisialisasi Papan Ggame Tetris berdasarkan pointer ke papan yang sudah ada
+	'''  Inisialisasi Papan Game Tetris berdasarkan pointer ke papan yang sudah ada
 	''' </summary>
 	''' <param name="Papan"></param>
 	Public Sub New(ByRef Papan As List(Of List(Of Char?)))
