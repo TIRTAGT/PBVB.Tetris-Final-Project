@@ -450,7 +450,7 @@ Public Class Tetris
 					e.Graphics.FillRectangles(New SolidBrush(Color.LightGray), BorderRects)
 
 					Dim text = PapanGame.AmbilData(baris - 1, kolom - 1)
-					e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 7, StartY + 5)
+					e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 10, StartY + 7)
 				End If
 			Next
 		Next
