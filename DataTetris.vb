@@ -9,7 +9,7 @@
 	''' </summary>
 	Public Sub New()
 		Me.PapanPermainan = New List(Of List(Of Char?))
-
+		
 		'Buat array/list papan permainan 6.31x10.97 (tapi dibulatkan)
 		TotalKolom = 6
 		TotalBaris = 11
