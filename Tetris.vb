@@ -34,7 +34,7 @@ Public Class Tetris
 
         ' Siapkan music player
         Me.MusicAudioPlayer = New WindowsMediaPlayer
-        Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, "PublicResources/Tom and Jerry at MGM performed by the John Wilson Orchestra 2013.mp3")
+        Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, $"PublicResources{Path.DirectorySeparatorChar}Tom and Jerry at MGM performed by the John Wilson Orchestra 2013.mp3")
         Me.MusicAudioPlayer.controls.play()
         AddHandler Me.MusicAudioPlayer.PlayStateChange, AddressOf Me.MusicLoop
 
@@ -66,7 +66,7 @@ Public Class Tetris
             Return
         End If
 
-        Dim BlokAktifSaatIni = PapanGame.GetBlokAktif()
+        Dim BlokAktifSaatIni = PapanGame.BlokAktif
 
         ' Jika ada blok akhir
         If BlokAktifSaatIni.HasValue Then
@@ -107,7 +107,7 @@ Public Class Tetris
         Me.GameArea.Refresh()
 
         ' Cek lagi status blok aktif saat ini
-        BlokAktifSaatIni = PapanGame.GetBlokAktif()
+        BlokAktifSaatIni = PapanGame.BlokAktif
 
         ' Jika tidak ada blok aktif
         If Not BlokAktifSaatIni.HasValue Then
@@ -226,7 +226,7 @@ Public Class Tetris
     End Sub
 
     Private Sub RefreshBlokSelanjutnya()
-        PapanGame.SetBlokAktif(Nothing)
+        PapanGame.BlokAktif = Nothing
 
         Dim a = PapanGame.AmbilPointerData()
 
@@ -238,7 +238,7 @@ Public Class Tetris
             End If
 
             a(0)(2) = b
-            PapanGame.SetBlokAktif((0, 2))
+            PapanGame.BlokAktif = (0, 2)
         End If
     End Sub
 

@@ -59,6 +59,11 @@
 		Next
 	End Sub
 
+	''' <summary>
+	''' Ambil kalimat yang terpilih oleh random generator
+	''' </summary>
+	''' <param name="HanyaAktif">True jika ingin mengambil kalimat terpilih yang aktif (belum diselesaikan)</param>
+	''' <returns></returns>
 	Public Function GetKalimatTerpilih(Optional HanyaAktif As Boolean = False) As List(Of String)
 		If Not HanyaAktif Then
 			Return KumpulanKalimatTerpilih
@@ -264,28 +269,6 @@
 		Return False
 	End Function
 
-	Public Function EnableKalimat(Kalimat As String)
-		For i = 0 To KumpulanKalimatTerpilih.Count - 1
-			If ("~" + Kalimat) = KumpulanKalimatTerpilih(i) Then
-				KumpulanKalimatTerpilih(i) = KumpulanKalimatTerpilih(i).Substring(1)
-				Return True
-			End If
-		Next
-
-		Return False
-	End Function
-
-	Public Function IsDisabled(Kalimat As String)
-		For i = 0 To KumpulanKalimatTerpilih.Count - 1
-			If ("~" + Kalimat) = KumpulanKalimatTerpilih(i) Then
-				KumpulanKalimatTerpilih(i) = "~" + KumpulanKalimatTerpilih(i)
-				Return True
-			End If
-		Next
-
-		Return False
-	End Function
-
 	Public Sub TambahMasukan_PemilihanPrediktif(Kalimat As String, JumlahHurufTerangkai As Short)
 		For i = 0 To ArrayPemilihanPrediktif.Length - 1
 			Dim a = ArrayPemilihanPrediktif(i)
@@ -296,18 +279,6 @@
 				If (JumlahHurufTerangkai > b) Then
 					ArrayPemilihanPrediktif(i) = (Kalimat, JumlahHurufTerangkai)
 				End If
-			End If
-		Next
-	End Sub
-
-	Public Sub UbahMasukan_PemilihanPrediktif(Kalimat As String, JumlahHurufTerangkai As Short)
-		For i = 0 To ArrayPemilihanPrediktif.Length - 1
-			Dim a = ArrayPemilihanPrediktif(i)
-
-			If (a.Item1 = Kalimat) Then
-				Dim b = ArrayPemilihanPrediktif(i).Item2
-
-				ArrayPemilihanPrediktif(i) = (Kalimat, JumlahHurufTerangkai)
 			End If
 		Next
 	End Sub
