@@ -34,7 +34,7 @@ Public Class Tetris
 
         ' Siapkan music player
         Me.MusicAudioPlayer = New WindowsMediaPlayer
-        Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, "PublicResources/Tom and Jerry at MGM performed by the John Wilson Orchestra 2013.mp3")
+        Me.MusicAudioPlayer.URL = Path.Combine(Application.StartupPath, $"PublicResources{Path.DirectorySeparatorChar}Tom and Jerry at MGM performed by the John Wilson Orchestra 2013.mp3")
         Me.MusicAudioPlayer.controls.play()
         AddHandler Me.MusicAudioPlayer.PlayStateChange, AddressOf Me.MusicLoop
 
@@ -66,7 +66,7 @@ Public Class Tetris
             Return
         End If
 
-        Dim BlokAktifSaatIni = PapanGame.GetBlokAktif()
+        Dim BlokAktifSaatIni = PapanGame.BlokAktif
 
         ' Jika ada blok akhir
         If BlokAktifSaatIni.HasValue Then
@@ -107,7 +107,7 @@ Public Class Tetris
         Me.GameArea.Refresh()
 
         ' Cek lagi status blok aktif saat ini
-        BlokAktifSaatIni = PapanGame.GetBlokAktif()
+        BlokAktifSaatIni = PapanGame.BlokAktif
 
         ' Jika tidak ada blok aktif
         If Not BlokAktifSaatIni.HasValue Then
@@ -226,7 +226,7 @@ Public Class Tetris
     End Sub
 
     Private Sub RefreshBlokSelanjutnya()
-        PapanGame.SetBlokAktif(Nothing)
+        PapanGame.BlokAktif = Nothing
 
         Dim a = PapanGame.AmbilPointerData()
 
@@ -238,7 +238,7 @@ Public Class Tetris
             End If
 
             a(0)(2) = b
-            PapanGame.SetBlokAktif((0, 2))
+            PapanGame.BlokAktif = (0, 2)
         End If
     End Sub
 
@@ -449,12 +449,12 @@ Public Class Tetris
                     BorderRects(3) = New Rectangle(StartX, StartY + 45 - BlockBorderSize, 44, BlockBorderSize) ' Bottom
                     e.Graphics.FillRectangles(New SolidBrush(Color.LightGray), BorderRects)
 
-                    Dim text = PapanGame.AmbilData(baris - 1, kolom - 1)
-                    e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 7, StartY + 5)
-                End If
-            Next
-        Next
-    End Sub
+                    Dim text = PapanGame.AmbilPointerData()(baris - 1)(kolom - 1)
+                    e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 10, StartY + 7)
+				End If
+			Next
+		Next
+	End Sub
 
     Private Sub Tetris_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         ' Jika objek musik masih ada, hentikan dan hapus dari memori.
@@ -483,11 +483,12 @@ Public Class Tetris
             Return
         End If
 
-        ' Jika S ditekan, geser blok aktif ke bawah
-        If e.KeyCode = Keys.S OrElse e.KeyCode = Keys.Down Then
-            Me.TickGame.Enabled = False ' Matikan tick/refresh otomatis
-            Me.OnGameTick() ' Jalankan tick/refresh seperti sekali agak blok turun
-        End If
+		' Jika S ditekan, geser blok aktif ke bawah
+		If e.KeyCode = Keys.S OrElse e.KeyCode = Keys.Down Then
+			Me.TickGame.Enabled = False ' Matikan tick/refresh otomatis
+			Me.OnGameTick() ' Jalankan tick/refresh seperti sekali agak blok turun
+			Return
+		End If
 
         ' Jika spasi ditekan, turunkan blok secara langsung
         If e.KeyCode = Keys.Space Then
@@ -507,6 +508,15 @@ Public Class Tetris
         Me.TickGame.Enabled = True
     End Sub
 
+    ''' <summary>
+    ''' Periksa apakah suatu kalimat yang dimulai dari kolom dan baris tertentu dapat mencapai target rangakaiannya
+    ''' </summary>
+    ''' <param name="kolom">Kolom dimulainya kalimat tersebut</param>
+    ''' <param name="baris">Baris dimulainya kalimat tersebut</param>
+    ''' <param name="TargetKalimat">Target (Hasil Final) Kalimat yang sedang dirangkai</param>
+    ''' <param name="RangkaianKalimat">Progress Kalimat yang saat ini sudah terangkai</param>
+    ''' <param name="Arah">Arah perangkaian kalimat (Kanan/Atas)</param>
+    ''' <returns>True jika user memiliki potensi untuk menyelesaian rangkaian kata, False jika tidak</returns>
     Private Function PrediksiCekApakahMuat(kolom As Integer, baris As Integer, TargetKalimat As String, RangkaianKalimat As String, Arah As String) As Boolean
         Dim JumlahKurangKarakter = TargetKalimat.Length - RangkaianKalimat.Length
         Dim c = RangkaianKalimat.Length
@@ -578,9 +588,21 @@ Public Class Tetris
         TickGame.Enabled = True
     End Sub
 
-    Private Sub BackButton_Click(sender As Object, e As EventArgs) Handles BackButton.Click
-        Tetris_FormClosing(Nothing, Nothing)
-        Me.Close()
-        Me.Dispose()
-    End Sub
+	Private Sub BackButton_Click(sender As Object, e As EventArgs) Handles BackButton.Click
+		Tetris_FormClosing(Nothing, Nothing)
+		Me.Close()
+		Me.Dispose()
+	End Sub
+
+	' Buat arrow keys (tombol panah) termasuk ke event tombol ditekan (Key_Down) dan tombol dilepas (Key_Up)
+	' Secara default, arrow key tidak termasuk ke Key_Down atau Key_Up event
+	' (source: https://stackoverflow.com/questions/1608611/keydown-event-not-firing-with-net-winforms)
+	Protected Overrides Function ProcessCmdKey(ByRef msg As Message, ByVal keydata As Keys) As Boolean
+		If keydata = Keys.Right Or keydata = Keys.Left Or keydata = Keys.Up Or keydata = Keys.Down Then
+			OnKeyDown(New KeyEventArgs(keydata))
+			ProcessCmdKey = True
+		Else
+			ProcessCmdKey = MyBase.ProcessCmdKey(msg, keydata)
+		End If
+	End Function
 End Class

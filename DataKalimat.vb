@@ -39,14 +39,14 @@
 	Private ReadOnly BatasJumlahHurufRandomSama As Integer = 2
 	''' <summary>
 	''' Jika True, pemilihan huruf dilakukan secara prediktif
-	'''         Game akan lebih sering memilih huruf yang akan membantu pemain pada saat itu
+	'''         Game akan memberikan huruf yang akan membantu pemain jika di deteksi oleh algoritma prediktif
 	'''         
 	''' Jika false, huruf yang dipilih akan selalau random
-	'''     Dikarena sangat random, ada kemungkinan pemain kalah karena tidak mendapat huruf yang dibutuhkan
+	'''     Dikarena sangat random, ada kemungkinan pemain sama sekali tidak mendapat huruf yang dibutuhkan
 	''' </summary>
 	Public ReadOnly GunakanPemilihanHurufPrediktif As Boolean = True
-	Private ArrayPemilihanPrediktif As (String, Short)()
 
+	Private ArrayPemilihanPrediktif As (String, Short)()
 
 	Public Sub New()
 		' Pastikan semua pilihan kalimat adalah huruf besar
@@ -59,6 +59,11 @@
 		Next
 	End Sub
 
+	''' <summary>
+	''' Ambil kalimat yang terpilih oleh random generator
+	''' </summary>
+	''' <param name="HanyaAktif">True jika ingin mengambil kalimat terpilih yang aktif (belum diselesaikan)</param>
+	''' <returns></returns>
 	Public Function GetKalimatTerpilih(Optional HanyaAktif As Boolean = False) As List(Of String)
 		If Not HanyaAktif Then
 			Return KumpulanKalimatTerpilih
@@ -253,6 +258,11 @@
 		Return String.Empty
 	End Function
 
+	''' <summary>
+	''' Berikan tanda disable untuk suatu kalimat yang terpilih
+	''' </summary>
+	''' <param name="Kalimat">Kalimat yang akan diberikan tanda disable</param>
+	''' <returns>True jika berhasil, False jika gagal</returns>
 	Public Function DisableKalimat(Kalimat As String)
 		For i = 0 To KumpulanKalimatTerpilih.Count - 1
 			If Kalimat = KumpulanKalimatTerpilih(i) Then
@@ -264,28 +274,11 @@
 		Return False
 	End Function
 
-	Public Function EnableKalimat(Kalimat As String)
-		For i = 0 To KumpulanKalimatTerpilih.Count - 1
-			If ("~" + Kalimat) = KumpulanKalimatTerpilih(i) Then
-				KumpulanKalimatTerpilih(i) = KumpulanKalimatTerpilih(i).Substring(1)
-				Return True
-			End If
-		Next
-
-		Return False
-	End Function
-
-	Public Function IsDisabled(Kalimat As String)
-		For i = 0 To KumpulanKalimatTerpilih.Count - 1
-			If ("~" + Kalimat) = KumpulanKalimatTerpilih(i) Then
-				KumpulanKalimatTerpilih(i) = "~" + KumpulanKalimatTerpilih(i)
-				Return True
-			End If
-		Next
-
-		Return False
-	End Function
-
+	''' <summary>
+	''' Tambah kalimat yang akan digunakan sebagai prediksi kalimat yang user prioritaskan
+	''' </summary>
+	''' <param name="Kalimat">Kalimat yang sedang dirangkai</param>
+	''' <param name="JumlahHurufTerangkai">Jumlah huruf dari kalimat tersebut yang sudah terangkai dan masih bisa dilengkapi</param>
 	Public Sub TambahMasukan_PemilihanPrediktif(Kalimat As String, JumlahHurufTerangkai As Short)
 		For i = 0 To ArrayPemilihanPrediktif.Length - 1
 			Dim a = ArrayPemilihanPrediktif(i)
@@ -300,18 +293,9 @@
 		Next
 	End Sub
 
-	Public Sub UbahMasukan_PemilihanPrediktif(Kalimat As String, JumlahHurufTerangkai As Short)
-		For i = 0 To ArrayPemilihanPrediktif.Length - 1
-			Dim a = ArrayPemilihanPrediktif(i)
-
-			If (a.Item1 = Kalimat) Then
-				Dim b = ArrayPemilihanPrediktif(i).Item2
-
-				ArrayPemilihanPrediktif(i) = (Kalimat, JumlahHurufTerangkai)
-			End If
-		Next
-	End Sub
-
+	''' <summary>
+	''' Hapus semua kalimat yang sudah ditambahkan untuk prediksi kalimat yang user prioritaskan
+	''' </summary>
 	Public Sub BersihkanMasukan_PemilihanPrediktif()
 		For i = 0 To ArrayPemilihanPrediktif.Length - 1
 			ArrayPemilihanPrediktif(i) = (ArrayPemilihanPrediktif(i).Item1, 0)

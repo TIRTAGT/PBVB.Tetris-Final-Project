@@ -1,6 +1,6 @@
 ﻿Public Class DataTetris
 	Private PapanPermainan As List(Of List(Of Char?))
-	Private BlokAktif As (Integer, Integer)?
+	Public BlokAktif As (Integer, Integer)?
 	Public TotalKolom As Integer = 0
 	Public TotalBaris As Integer = 0
 
@@ -9,18 +9,7 @@
 	''' </summary>
 	Public Sub New()
 		Me.PapanPermainan = New List(Of List(Of Char?))
-		Me.Inisialisasi()
-	End Sub
-
-	''' <summary>
-	'''  Inisialisasi Papan Ggame Tetris berdasarkan pointer ke papan yang sudah ada
-	''' </summary>
-	''' <param name="Papan"></param>
-	Public Sub New(ByRef Papan As List(Of List(Of Char?)))
-		Me.PapanPermainan = Papan
-	End Sub
-
-	Private Sub Inisialisasi()
+		
 		'Buat array/list papan permainan 6.31x10.97 (tapi dibulatkan)
 		TotalKolom = 6
 		TotalBaris = 11
@@ -37,10 +26,18 @@
 	End Sub
 
 	''' <summary>
+	'''  Inisialisasi Papan Game Tetris berdasarkan pointer ke papan yang sudah ada
+	''' </summary>
+	''' <param name="Papan"></param>
+	Public Sub New(ByRef Papan As List(Of List(Of Char?)))
+		Me.PapanPermainan = Papan
+	End Sub
+
+	''' <summary>
 	''' Duplikat isi papan permainan tanpa reference memori asli
 	''' </summary>
 	''' <param name="Papan">Papan yang ingin di duplikat</param>
-	Public Function DuplikatPapan(ByRef Papan As List(Of List(Of Char?))) As List(Of List(Of Char?))
+	Private Function DuplikatPapan(ByRef Papan As List(Of List(Of Char?))) As List(Of List(Of Char?))
 		Dim temp As New List(Of List(Of Char?))
 
 		For i = 0 To Papan.Count - 1
@@ -56,7 +53,12 @@
 		Return temp
 	End Function
 
-	Public Function DuplikatBlokAktif(ByRef BlokAktif As (Integer, Integer)?) As (Integer, Integer)?
+	''' <summary>
+	''' Duplikat tuple yang merepresentasikan blok aktif
+	''' </summary>
+	''' <param name="BlokAktif">Tuple asli</param>
+	''' <returns>Tuple baru dengan nilai yang sama</returns>
+	Private Function DuplikatBlokAktif(ByRef BlokAktif As (Integer, Integer)?) As (Integer, Integer)?
 		Dim temp As (Integer, Integer)?
 
 		If BlokAktif.HasValue Then
@@ -66,6 +68,10 @@
 		Return temp
 	End Function
 
+	''' <summary>
+	''' Turunkan blok apapaun yang masih bisa diturunkan
+	''' </summary>
+	''' <returns>Jumlah blok yang berhasil diturunkan</returns>
 	Public Function Turunkan() As Integer
 		Dim JumlahBlokTurun = 0
 		Dim tempPapan = Me.DuplikatPapan(Me.PapanPermainan)
@@ -116,6 +122,11 @@
 		Return JumlahBlokTurun
 	End Function
 
+	''' <summary>
+	''' Geser blok yang sedang aktif ke Axis X (Samping)
+	''' </summary>
+	''' <param name="jumlah_gerak">Jumlah gerakan dalam satuan blok</param>
+	''' <returns>True jika berhasil, False jika gagal</returns>
 	Public Function GeserX_BlokAktif(jumlah_gerak As Short) As Boolean
 		Dim tempPapan = Me.DuplikatPapan(Me.PapanPermainan)
 		Dim tempBlokAktif = Me.DuplikatBlokAktif(Me.BlokAktif)
@@ -174,6 +185,11 @@
 		Return True
 	End Function
 
+	''' <summary>
+	''' Geser blok yang sedang aktif ke Axis Y (Tinggi/Tegak Lurus)
+	''' </summary>
+	''' <param name="jumlah_gerak">Jumlah gerakan dalam satuan blok</param>
+	''' <returns>True jika berhasil, False jika gagal</returns>
 	Public Function GeserY_BlokAktif(jumlah_gerak As Short) As Boolean
 		Dim tempPapan = Me.DuplikatPapan(Me.PapanPermainan)
 		Dim tempBlokAktif = Me.DuplikatBlokAktif(Me.BlokAktif)
@@ -232,10 +248,23 @@
 		Return True
 	End Function
 
+	''' <summary>
+	'''  Memeriksa apakah blok pada baris dan kolom spesifik pada PapanTetris saat ini bisa diturunkan
+	''' </summary>
+	''' <param name="IndexBaris">Index baris blok</param>
+	''' <param name="IndexKolom">Index kolom blok</param>
+	''' <returns>True jika bisa diturunkan, False jika tidak</returns>
 	Public Function BlokBisaDiturunkan(IndexBaris As Integer, IndexKolom As Integer) As Boolean
 		Return Me.BlokBisaDiturunkan(Me.PapanPermainan, IndexBaris, IndexKolom)
 	End Function
 
+	''' <summary>
+	'''  Memeriksa apakah blok pada baris dan kolom spesifik pada PapanTetris saat ini bisa diturunkan
+	''' </summary>
+	''' <param name="tempPapan">PapanTetris / Papan Permainan yang akan dicek</param>
+	''' <param name="IndexBaris">Index baris blok</param>
+	''' <param name="IndexKolom">Index kolom blok</param>
+	''' <returns>True jika bisa diturunkan, False jika tidak</returns>
 	Public Function BlokBisaDiturunkan(ByRef tempPapan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As Boolean
 		' Jika blok matrix ini tidak kosong
 		If Not IsKosong(tempPapan, IndexBaris, IndexKolom) Then
@@ -271,33 +300,6 @@
 		Return Me.IsKosong(Papan(IndexBaris)(IndexKolom))
 	End Function
 
-	Public Function AmbilData(IndexBaris As Integer, IndexKolom As Integer) As String
-		Return Me.AmbilData(Me.PapanPermainan, IndexBaris, IndexKolom)
-	End Function
-
-	Public Function AmbilData(Papan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As String
-		Return Papan(IndexBaris)(IndexKolom)
-	End Function
-
-
-	Public Function AmbilKumpulanKolom(IndexBaris As Integer, Optional TanpaBlokKosong As Boolean = False) As List(Of Char?)
-		Dim a = Me.PapanPermainan(IndexBaris)
-
-		If TanpaBlokKosong Then
-			Dim b As New List(Of Char?)
-
-			For i = 0 To a.Count - 1
-				If (Me.IsKosong(a(i))) Then
-					b.Add(a(i))
-				End If
-			Next
-
-			Return b
-		End If
-
-		Return a
-	End Function
-
 	''' <summary>
 	''' Ambil pointer ke variable papan permainan pada class DataTetris.<br></br>
 	''' Perubahan akan langsung mempengaruhi variable internal class DataTetris
@@ -305,14 +307,6 @@
 	''' <returns></returns>
 	Public Function AmbilPointerData() As List(Of List(Of Char?))
 		Return PapanPermainan
-	End Function
-
-	Public Sub SetBlokAktif(blok As (Integer, Integer)?)
-		Me.BlokAktif = blok
-	End Sub
-
-	Public Function GetBlokAktif() As (Integer, Integer)?
-		Return Me.BlokAktif
 	End Function
 #End Region
 
