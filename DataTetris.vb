@@ -53,6 +53,11 @@
 		Return temp
 	End Function
 
+	''' <summary>
+	''' Duplikat tuple yang merepresentasikan blok aktif
+	''' </summary>
+	''' <param name="BlokAktif">Tuple asli</param>
+	''' <returns>Tuple baru dengan nilai yang sama</returns>
 	Private Function DuplikatBlokAktif(ByRef BlokAktif As (Integer, Integer)?) As (Integer, Integer)?
 		Dim temp As (Integer, Integer)?
 
@@ -243,10 +248,23 @@
 		Return True
 	End Function
 
+	''' <summary>
+	'''  Memeriksa apakah blok pada baris dan kolom spesifik pada PapanTetris saat ini bisa diturunkan
+	''' </summary>
+	''' <param name="IndexBaris">Index baris blok</param>
+	''' <param name="IndexKolom">Index kolom blok</param>
+	''' <returns>True jika bisa diturunkan, False jika tidak</returns>
 	Public Function BlokBisaDiturunkan(IndexBaris As Integer, IndexKolom As Integer) As Boolean
 		Return Me.BlokBisaDiturunkan(Me.PapanPermainan, IndexBaris, IndexKolom)
 	End Function
 
+	''' <summary>
+	'''  Memeriksa apakah blok pada baris dan kolom spesifik pada PapanTetris saat ini bisa diturunkan
+	''' </summary>
+	''' <param name="tempPapan">PapanTetris / Papan Permainan yang akan dicek</param>
+	''' <param name="IndexBaris">Index baris blok</param>
+	''' <param name="IndexKolom">Index kolom blok</param>
+	''' <returns>True jika bisa diturunkan, False jika tidak</returns>
 	Public Function BlokBisaDiturunkan(ByRef tempPapan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As Boolean
 		' Jika blok matrix ini tidak kosong
 		If Not IsKosong(tempPapan, IndexBaris, IndexKolom) Then
@@ -280,14 +298,6 @@
 
 	Public Function IsKosong(Papan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As Boolean
 		Return Me.IsKosong(Papan(IndexBaris)(IndexKolom))
-	End Function
-
-	Public Function AmbilData(IndexBaris As Integer, IndexKolom As Integer) As String
-		Return Me.AmbilData(Me.PapanPermainan, IndexBaris, IndexKolom)
-	End Function
-
-	Public Function AmbilData(Papan As List(Of List(Of Char?)), IndexBaris As Integer, IndexKolom As Integer) As String
-		Return Papan(IndexBaris)(IndexKolom)
 	End Function
 
 	''' <summary>

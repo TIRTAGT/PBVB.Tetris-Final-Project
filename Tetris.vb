@@ -449,8 +449,8 @@ Public Class Tetris
                     BorderRects(3) = New Rectangle(StartX, StartY + 45 - BlockBorderSize, 44, BlockBorderSize) ' Bottom
                     e.Graphics.FillRectangles(New SolidBrush(Color.LightGray), BorderRects)
 
-					Dim text = PapanGame.AmbilData(baris - 1, kolom - 1)
-					e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 10, StartY + 7)
+                    Dim text = PapanGame.AmbilPointerData()(baris - 1)(kolom - 1)
+                    e.Graphics.DrawString(text, GameArea.Font, New SolidBrush(Color.LightGray), StartX + 10, StartY + 7)
 				End If
 			Next
 		Next
@@ -508,6 +508,15 @@ Public Class Tetris
         Me.TickGame.Enabled = True
     End Sub
 
+    ''' <summary>
+    ''' Periksa apakah suatu kalimat yang dimulai dari kolom dan baris tertentu dapat mencapai target rangakaiannya
+    ''' </summary>
+    ''' <param name="kolom">Kolom dimulainya kalimat tersebut</param>
+    ''' <param name="baris">Baris dimulainya kalimat tersebut</param>
+    ''' <param name="TargetKalimat">Target (Hasil Final) Kalimat yang sedang dirangkai</param>
+    ''' <param name="RangkaianKalimat">Progress Kalimat yang saat ini sudah terangkai</param>
+    ''' <param name="Arah">Arah perangkaian kalimat (Kanan/Atas)</param>
+    ''' <returns>True jika user memiliki potensi untuk menyelesaian rangkaian kata, False jika tidak</returns>
     Private Function PrediksiCekApakahMuat(kolom As Integer, baris As Integer, TargetKalimat As String, RangkaianKalimat As String, Arah As String) As Boolean
         Dim JumlahKurangKarakter = TargetKalimat.Length - RangkaianKalimat.Length
         Dim c = RangkaianKalimat.Length
